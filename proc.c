@@ -540,3 +540,15 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+void sys_shutdown(void){
+outw(0xB004, 0x0 | 0x2000);
+outw(0x604, 0x0 | 0x2000);
+}
+
+void sys_exit2(int status){
+int i;
+argint(0, &i);
+cprintf("status: %d\n", i);
+exit();
+}
