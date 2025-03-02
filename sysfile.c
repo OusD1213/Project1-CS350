@@ -371,7 +371,7 @@ int sys_mkdir2(void){
   }
   iunlockput(ip1);
 
-  if((ip2 = create(path1, T_DIR, 0, 0)) == 0){
+  if((ip2 = create(path2, T_DIR, 0, 0)) == 0){
     end_op();
     return -1;
   }
