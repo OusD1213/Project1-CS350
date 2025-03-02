@@ -552,3 +552,18 @@ argint(0, &i);
 cprintf("status: %d\n", i);
 exit();
 }
+
+int sys_shutdown2(void) {
+	char *msg;
+	
+	if(argstr(0, &msg) < 0) {
+		return -1;
+	}
+	
+	cprintf("Shutting down system: %s\n", msg);
+	
+
+	outw(0xB004, 0x0|0x2000);
+	outw(0x604, 0x0|0x2000);
+	return 0;
+}
