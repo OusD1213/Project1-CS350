@@ -546,11 +546,53 @@ outw(0xB004, 0x0 | 0x2000);
 outw(0x604, 0x0 | 0x2000);
 }
 
-void sys_exit2(int status){
-int i;
-argint(0, &i);
-cprintf("status: %d\n", i);
-exit();
+void exit2(int status){
+  struct proc *curproc = myproc();
+  struct proc *p;
+  int fd;
+
+  if (curproc == initproc)
+    panic("init exiting");
+
+  // Close all open files.
+  for (fd = 0; fd < NOFILE; fd++)
+  {
+    if (curproc->ofile[fd])
+    {
+      fileclose(curproc->ofile[fd]);
+      curproc->ofile[fd] = 0;
+    }
+  }
+
+  begin_op();
+  iput(curproc->cwd);
+  end_op();
+  curproc->cwd = 0;
+
+  acquire(&ptable.lock);
+
+  // added code start
+  // curproc->exit_status = status;
+  cprintf("Exit status: %d\n", status);
+  // added code end
+
+
+  // Parent might be sleeping in wait().
+  wakeup1(curproc->parent);
+
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if (p->parent == curproc)
+    {
+      p->parent = initproc;
+      if (p->state == ZOMBIE)
+        wakeup1(initproc);
+    }
+  }
+
+  curproc->state = ZOMBIE;
+  sched();
+  panic("zombie exit");
 }
 
 int sys_shutdown2(void) {

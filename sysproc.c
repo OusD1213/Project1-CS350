@@ -20,6 +20,17 @@ sys_exit(void)
   return 0;  // not reached
 }
 
+int sys_exit2(int status){
+  int i;
+
+  if(argint(0, &i) < 0){
+    return -1;
+  }
+
+  exit2(i);
+  return 0;
+}
+
 int
 sys_wait(void)
 {
