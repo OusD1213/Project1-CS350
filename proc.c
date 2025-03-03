@@ -572,7 +572,6 @@ void exit2(int status){
   acquire(&ptable.lock);
 
   // added code start
-  // curproc->exit_status = status;
   cprintf("Exit status: %d\n", status);
   // added code end
 
@@ -582,7 +581,8 @@ void exit2(int status){
 
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++)
   {
-    if (p->parent == curproc)
+    
+if (p->parent == curproc)
     {
       p->parent = initproc;
       if (p->state == ZOMBIE)
@@ -609,3 +609,4 @@ int sys_shutdown2(void) {
 	outw(0x604, 0x0|0x2000);
 	return 0;
 }
+
